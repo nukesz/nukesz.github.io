@@ -128,4 +128,3 @@ I don't want to waste my pen to write down what you can find on the awesome [jet
 ## SUMMARY
 
 With all these, you now have a fully functional environment and ready to jump into the game development business! In the next post we're going to create our first game using libgdx.
->>>>>>> Added Gradle and IntelliJ part to design env post
