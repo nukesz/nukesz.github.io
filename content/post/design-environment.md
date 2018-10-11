@@ -62,13 +62,15 @@ test games, we need to have Android SDK on our machine, so let's download it.
 I prefer to use the command line tools only, so just go to [android developer] (https://developer.android.com/studio/) page, scroll to the "Command line tools" only section and
 download the linux zip.
 ```
+$ mkdir ~/dev/android-sdk
 $ unzip sdk-tools-linux-*.zip
-$ mv tools/ ~/dev/tools/android/sdk-tools
+$ mv tools/ ~/dev/android-sdk/tools
 ```
-We can repeat the same steps as we did for gradle, to create the ANDROID_HOME and add the binaries to the path.
+We can repeat the same steps as we did for gradle to create the environment variables and add the binaries to the path.
 ```
-export ANDROID_HOME=~/dev/tools/android/sdk-tools
-export PATH=$PATH:$ANDROID_HOME/bin
+export ANDROID_HOME=~/dev/android-sdk
+export ANDROID_TOOLS=$ANDROID_HOME/tools
+export PATH=$PATH:$ANDROID_TOOLS/bin
 ```
 Verify the installation by running the `sdkmanager`.
 ```
@@ -76,20 +78,21 @@ $ sdkmanager
 Warning: File /home/nukesz/.android/repositories.cfg could not be loaded.            
 [=======================================] 100% Computing updates...
 ```
+You can easily fix the warning by create an empty cfg file.
+```
+$ touch ~/.android/repositories.cfg
+```
 We have more thing to do and that is to install build-tools and platforms for android. I tend to pick a stable version and make sure all the games I develop are using that version. In my opinion it's easier to maintain one version (and emulators to it) than getting weird errors because of different versions. So let's install Android 28.
 ## Install Build Tools
 ```
-$ sdkmanager "build-tools;28.0.1"
+$ yes | sdkmanager "build-tools;28.0.1"
 ```
 ## Install platforms
 ```
-$ sdkmanager "platforms;android-28"
+$ yes | sdkmanager "platforms;android-28"
 ```
-After these two commands, you should have a following structure in your android folder (not *ANDROID_HOME*, the `sdkmanager` will create new folders one level above of your *ANDROID_HOME*):
+After these two commands, you should have a following structure in your  *ANDROID_HOME*:
 ```
-$ ls ~/dev/tools/android/
-build-tools  licenses  platforms  sdk-tools
-# or
-$ ls $ANDROID_HOME/..
+$ ls $ANDROID_HOME
 build-tools  licenses  platforms  sdk-tools
 ```
