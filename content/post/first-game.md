@@ -7,7 +7,7 @@ authors = []
 
 # Tags and categories
 # For example, use `tags = []` for no tags, or the form `tags = ["A Tag", "Another Tag"]` for one or more tags.
-tags = ["libgdx", "android"]
+tags = ["libgdx", "intellij", "kotlin", "gradle"]
 categories = []
 
 # Featured image
@@ -25,7 +25,7 @@ preview = true
 # Create the first game
 
 After reading and following along the [design environment post](../design-environment) you should have a fully working environment and we can start creating our first game.   
-Using the gdx setup tool from libgdx it's pretty straigthforward to use. I recommend to read the official [documentation](https://github.com/libgdx/libgdx/wiki/Project-Setup-Gradle) how to run and configure the tool. However there are some trick and tips what you need to be aware of and do after the game has been created. Lets download the [jar](https://libgdx.badlogicgames.com/nightlies/dist/gdx-setup.jar) and run it. 
+Using the gdx setup tool from libgdx it's pretty straightforward to use. I recommend to read the official [documentation](https://github.com/libgdx/libgdx/wiki/Project-Setup-Gradle) how to run and configure the tool. However there are some trick and tips what you need to be aware of and do after the game has been created. Lets download the [jar](https://libgdx.badlogicgames.com/nightlies/dist/gdx-setup.jar) and run it.
 ```
 $ java -jar gdx-setup.jar
 ```
@@ -35,13 +35,34 @@ Running the command use should see something like this:
 
 On the UI fill the following things:  
 
-- Name: 
-- Package:  
-- Game class:
-- Destination:
-- Android SDK:
+- Name: *my-first-game*
+- Package: *com.yourname.game*
+- Game class: *MyFirstGame*
+- Destination: *~/games/my-first-game*
+- Android SDK: *~/dev/android-sdk*
 
-Select Desktop, Android projects. Unfortunately we cannot use the html project with kotlin. For the web libgdx uses GWT which uses java source code and not the bytecode itself. There are other projects like teavm and maybe in the near future we can  publish our game on web, but right now its not possible out of the box. Our main target is android, so we can live and continue without the html support. 
-On the advanced options tick Use kotlin checkbox. 
-The generated project as a gradle which we can import into intellij or eclipse. File / open / from existing source / ok. If everything went well we should see our synced projects on the left and under gradle projects on the right. 
-Running the game can be done from intellij or from the command line. Right click run .. workslace.. from the command line gradlew (use wrapper to make sure your using the correvct gradle cersion) desktop:run. In either case yoh should see the followíng @kep.  There a few things that you can and should do after this. 1. Use the latest kotlin version. Gradle android plugin ashley. Add google jcenter dependenyies. Convert java code to kotlin. Intellij has a nice plugin which I highly recommend. It has features like... it can be installed by clicking... disable gradle configure on demand. You still should be able to run the game as we did before. Whenever you create a new game you should repeat the same steps. But fortunatelly some parts can be aoutomated. Using the project generator you can create a shell with the prefield valus anď only the post installations have to be done. There is also another project that try to help to setup a new project,in the next blog post I create a game using that. 
+Select Desktop and Android sub projects. Unfortunately we cannot use the html project with kotlin. For the web libgdx uses GWT which uses the java source code and not the bytecode itself. There are other projects like [TeaVM](http://www.teavm.org/) and maybe in the near future we can publish our games on the web, but right now it's not possible out of the box. Our main target is android, so we can live and continue without the html support.
+
+On the advanced options tick `Use Kotlin` checkbox and click Generate. Wait until the you see the "BUILD SUCCESSFUL" message and then the generated project can be imported into IntelliJ or eclipse. File / Open, and select your new gradle project. I usually check "use auto-import" and click "OK". If everything went well you should see your synced projects on the left and under gradle projects on the right. Running the game can be done from either from IntelliJ or the command line.
+
+### Using IDE
+Open the DesktopLauncher class -> Right click -> Run ... You will get an error saying "Couldn't load file: badlogic.jpg", to solve it go to the run configurations and change the working directory to point to the android/assets folder. Try to run it again and you should see the Bad Logic Games logo.
+
+### Using command line
+Using kotlin and libgdx from IntelliJ can generate unknown errors. "FileNotFound", "ClassNotFound", etc errors. Sometimes it's hard to know what's the problem so I prefer to run the games from command line. Just open a terminal, navigate to the game folder and run:
+```
+$ ./gradlew desktop:run
+```
+Of course, the same can be done from IntelliJ itself thanks to the gradle integration.
+
+### What's next?
+
+There a few things that you can and should do after this.
+
+- Update dependencies. The setup still uses old libraries what you can upgrade (like kotlin, android plugin, ashley etc). Usually IntelliJ gives you a warning about a version mismatch or if a new version is available.
+- Convert java code to kotlin. The "Use Kotlin" still generates java code, so you should convert all those classes into kotlin.
+- IntelliJ has a nice [plugin](https://plugins.jetbrains.com/plugin/8509-libgdx-plugin) which I highly recommend to install and use. It gives you nice integration with the library.
+
+### A little help
+
+Of course using the official setup tool is recommended, but there are other setup tools available. One popular is [gdx-setup](https://github.com/czyzby/gdx-setup) by czyzby. Have a look, probably it can help you simplify the creation of games.
