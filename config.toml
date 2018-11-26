@@ -244,10 +244,10 @@ enableGitInfo = false
     icon_pack = "fas"
     link = "mailto:norbert.benczur@gmail.com"
 
-  # [[params.social]]
-  #   icon = "twitter"
-  #   icon_pack = "fab"
-  #   link = "//twitter.com/GeorgeCushen"
+  [[params.social]]
+    icon = "twitter"
+    icon_pack = "fab"
+    link = "//twitter.com/NorbertBenczur"
 
   # [[params.social]]
   #   icon = "google-scholar"
