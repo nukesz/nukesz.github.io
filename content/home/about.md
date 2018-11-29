@@ -29,10 +29,10 @@ weight = 5
 
 +++
 
-# Biography
+# #ME
 
-> Choose a job you love, and you will never have to work a day in your life.
->
+I'm just a simple guy who loves coding and mostly work with languages around the JVM. I'd like to help people with videos, blog posts and coaching to be better programmers.
+Hope you find my work useful, don't hesitate to contact me if you have any questions about programming or topic what you would like to hear about.
+
+> Choose a job you love, and you will never have to work a day in your life.  
 > -- <cite>Confucius</cite>
-
-So technically, I've never worked in my whole life.
