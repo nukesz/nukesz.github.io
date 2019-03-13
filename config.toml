@@ -240,6 +240,11 @@ enableGitInfo = false
   #   Full list: https://jpswalsh.github.io/academicons/
 
   [[params.social]]
+    icon = "youtube"
+    icon_pack = "fab"
+    link = "https://www.youtube.com/channel/UCxTl-dwR9J9iIhtNT2j0Vrg"
+
+  [[params.social]]
     icon = "envelope"
     icon_pack = "fas"
     link = "mailto:norbert.benczur@gmail.com"
