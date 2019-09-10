@@ -19,9 +19,6 @@ copyright = "{year}"
 googleAnalytics = "UA-127428919-1"
 enableRobotsTXT = true
 
-# Enable comments by entering your Disqus shortname
-disqusShortname = "norbert-blog"
-
 ############################
 ## Advanced options below ##
 ############################
