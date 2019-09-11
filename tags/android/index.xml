@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>android | Norbert Benczúr</title>
+    <link>https://nukesz.github.io/tags/android/</link>
+      <atom:link href="https://nukesz.github.io/tags/android/index.xml" rel="self" type="application/rss+xml" />
+    <description>android</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>2019</copyright><lastBuildDate>Thu, 04 Oct 2018 16:02:29 +0200</lastBuildDate>
+    <image>
+      <url>https://nukesz.github.io/img/icon-192.png</url>
+      <title>android</title>
+      <link>https://nukesz.github.io/tags/android/</link>
+    </image>
+    
+    <item>
+      <title>Design Environment for Game Development</title>
+      <link>https://nukesz.github.io/post/design-environment/</link>
+      <pubDate>Thu, 04 Oct 2018 16:02:29 +0200</pubDate>
+      <guid>https://nukesz.github.io/post/design-environment/</guid>
+      <description>
+
+&lt;h1 id=&#34;getting-started&#34;&gt;Getting started&lt;/h1&gt;
+
+&lt;p&gt;In this article I would like to show what is required to have an up and ready environment for
+game development with the &lt;strong&gt;libgdx&lt;/strong&gt; framework. There is a getting started page on the libgdx&amp;rsquo;s website, but I wanted to gather all the required steps in one place. I will focus on what is needed for a 2D Game Developer who is targeting &lt;strong&gt;Android&lt;/strong&gt; mainly. I&amp;rsquo;m using Ubuntu 18.04 right now, but probably fellow windows, macOS users can follow along.&lt;/p&gt;
+
+&lt;p&gt;We&amp;rsquo;re going to install and setup the following tools:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;java&lt;/li&gt;
+&lt;li&gt;gradle&lt;/li&gt;
+&lt;li&gt;android&lt;/li&gt;
+&lt;li&gt;IntelliJ (skip if you&amp;rsquo;re using other IDE)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&#34;java&#34;&gt;JAVA&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-sh&#34;&gt;sudo add-apt-repository ppa:webupd8team/java -y
+sudo apt-get update
+sudo apt-get install oracle-java8-installer
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Set Oracle Java 8 as default&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-sh&#34;&gt;sudo apt-get install oracle-java8-set-default
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Verify the installation was successful&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-sh&#34;&gt;$ java -version
+java version &amp;quot;1.8.0_181&amp;quot;
+Java(TM) SE Runtime Environment (build 1.8.0_181-b13)
+Java HotSpot(TM) 64-Bit Server VM (build 25.181-b13, mixed mode)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&#34;gradle&#34;&gt;GRADLE&lt;/h2&gt;
+
+&lt;p&gt;Usually projects use &lt;a href=&#34;https://docs.gradle.org/current/userguide/gradle_wrapper.html&#34; target=&#34;_blank&#34;&gt;gradle wrapper&lt;/a&gt; as it helps to reduce the cost to setup the build environment for the project. For example if you&amp;rsquo;re using docker (as you should! :) it helps to base you&amp;rsquo;re image on some existing java image only. You don&amp;rsquo;t have to worry about finding an image which has gradle also, just use your wrapper and you&amp;rsquo;re good to go[build].
+But&amp;hellip; of course to create the wrapper you need to have gradle installed. Probably you can get away to copy-paste from another project. But I think it&amp;rsquo;s just convenient to have it in your terminal as you need.
+I&amp;rsquo;ve copied the part from the &lt;a href=&#34;https://docs.gradle.org/current/userguide/installation.html&#34; target=&#34;_blank&#34;&gt;installation&lt;/a&gt; page:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-sh&#34;&gt;mkdir /opt/gradle
+unzip -d /opt/gradle gradle-4.10.2-bin.zip
+ls /opt/gradle/gradle-4.10.2
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Verify installation&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-sh&#34;&gt;gradle -v
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Add it to the path. I recommend you to add this line to end of your ~/.bashrc so it will be loaded each time you open a new terminal.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-sh&#34;&gt;export PATH=$PATH:/opt/gradle/gradle-4.10.2/bin
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&#34;android&#34;&gt;ANDROID&lt;/h2&gt;
+
+&lt;p&gt;The market we aim is going to be the Android Marketplace, Google Play. In order to build, run and
+test games, we need to have Android SDK on our machine, so let&amp;rsquo;s download it.
+I prefer to use the command line tools only, so just go to &lt;a href=&#34;https://developer.android.com/studio/&#34; target=&#34;_blank&#34;&gt;android developer&lt;/a&gt; page, scroll to the &amp;ldquo;Command line tools&amp;rdquo; only section and
+download the linux zip.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-sh&#34;&gt;mkdir ~/dev/android-sdk
+unzip sdk-tools-linux-*.zip
+mv tools/ ~/dev/android-sdk/tools
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We can repeat the same steps as we did for gradle to create the environment variables and add the binaries to the path.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-sh&#34;&gt;export ANDROID_HOME=~/dev/android-sdk
+export ANDROID_TOOLS=$ANDROID_HOME/tools
+export PATH=$PATH:$ANDROID_TOOLS/bin
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Verify the installation by running the &lt;code&gt;sdkmanager&lt;/code&gt;.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-sh&#34;&gt;$ sdkmanager
+Warning: File /home/nukesz/.android/repositories.cfg could not be loaded.
+[=======================================] 100% Computing updates...
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;You can easily fix the warning by create an empty cfg file.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-sh&#34;&gt;touch ~/.android/repositories.cfg
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We have more thing to do and that is to install build-tools and platforms for android. I tend to pick a stable version and make sure all the games I develop are using that version. In my opinion it&amp;rsquo;s easier to maintain one version (and emulators to it) than getting weird errors because of different versions. So let&amp;rsquo;s install Android 28.&lt;/p&gt;
+
+&lt;h2 id=&#34;install-build-tools&#34;&gt;Install Build Tools&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-sh&#34;&gt;yes | sdkmanager &amp;quot;build-tools;28.0.1&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;install-platforms&#34;&gt;Install platforms&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-sh&#34;&gt;yes | sdkmanager &amp;quot;platforms;android-28&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;After these two commands, you should have a following structure in your _ANDROID&lt;em&gt;HOME&lt;/em&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-sh&#34;&gt;$ ls $ANDROID_HOME
+build-tools  licenses  platforms  sdk-tools
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&#34;intellij&#34;&gt;INTELLIJ&lt;/h2&gt;
+
+&lt;p&gt;I don&amp;rsquo;t want to waste my pen to write down what you can find on the awesome &lt;a href=&#34;https://www.jetbrains.com/&#34; target=&#34;_blank&#34;&gt;jetbrains&lt;/a&gt; page, but I just want to highlight that instead of downloading all the cool products from jetbrains one-by-one, just download the &lt;a href=&#34;https://www.jetbrains.com/toolbox/app/&#34; target=&#34;_blank&#34;&gt;toolbox&lt;/a&gt;. With that app you can download/upgrade/delete apps, and never have to worry about upgrading manually, linking bins etc.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&#34;summary&#34;&gt;SUMMARY&lt;/h2&gt;
+
+&lt;p&gt;With all these, you now have a fully functional environment and ready to jump into the game development business! In the next post we&amp;rsquo;re going to create our first game using libgdx.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

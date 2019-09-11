@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Tags | Norbert Benczúr</title>
+    <link>https://nukesz.github.io/tags/</link>
+      <atom:link href="https://nukesz.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <description>Tags</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>2019</copyright><lastBuildDate>Mon, 26 Nov 2018 10:59:53 +0100</lastBuildDate>
+    <image>
+      <url>https://nukesz.github.io/img/icon-192.png</url>
+      <title>Tags</title>
+      <link>https://nukesz.github.io/tags/</link>
+    </image>
+    
+    <item>
+      <title>interview</title>
+      <link>https://nukesz.github.io/tags/interview/</link>
+      <pubDate>Mon, 26 Nov 2018 10:59:53 +0100</pubDate>
+      <guid>https://nukesz.github.io/tags/interview/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>programming</title>
+      <link>https://nukesz.github.io/tags/programming/</link>
+      <pubDate>Mon, 26 Nov 2018 10:59:53 +0100</pubDate>
+      <guid>https://nukesz.github.io/tags/programming/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>style</title>
+      <link>https://nukesz.github.io/tags/style/</link>
+      <pubDate>Mon, 26 Nov 2018 10:59:53 +0100</pubDate>
+      <guid>https://nukesz.github.io/tags/style/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>gradle</title>
+      <link>https://nukesz.github.io/tags/gradle/</link>
+      <pubDate>Thu, 25 Oct 2018 15:46:05 +0200</pubDate>
+      <guid>https://nukesz.github.io/tags/gradle/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>intellij</title>
+      <link>https://nukesz.github.io/tags/intellij/</link>
+      <pubDate>Thu, 25 Oct 2018 15:46:05 +0200</pubDate>
+      <guid>https://nukesz.github.io/tags/intellij/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>kotlin</title>
+      <link>https://nukesz.github.io/tags/kotlin/</link>
+      <pubDate>Thu, 25 Oct 2018 15:46:05 +0200</pubDate>
+      <guid>https://nukesz.github.io/tags/kotlin/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>libgdx</title>
+      <link>https://nukesz.github.io/tags/libgdx/</link>
+      <pubDate>Thu, 25 Oct 2018 15:46:05 +0200</pubDate>
+      <guid>https://nukesz.github.io/tags/libgdx/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>android</title>
+      <link>https://nukesz.github.io/tags/android/</link>
+      <pubDate>Thu, 04 Oct 2018 16:02:29 +0200</pubDate>
+      <guid>https://nukesz.github.io/tags/android/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>
