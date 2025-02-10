@@ -10,7 +10,7 @@ categories: []
 date: 2025-02-10T20:53:53+01:00
 lastmod: 2025-02-10T20:53:53+01:00
 featured: false
-draft: true
+draft: false
 
 # Featured image
 # To use, add an image named `featured.jpg/png` to your page's folder.
@@ -44,6 +44,35 @@ Just hit https://start.spring.io/ and create a new project. I'll be using:
 Let's add a new `@RestController` and create an endpoint to test:
 
 ```java
+import org.springframework.web.bind.annotation.RestController;
 
+@RestController
+public class MessageController {
+    @GetMapping("/ping")
+    public String getMessage() {
+        return "Pong!";
+    }
+}
 ```
+
+Build and run the application as a normal **jar**:
+
+```sh
+# Build it
+./gradlew build
+# Run it
+java -jar build/libs/dockerize-spring-boot-0.0.1-SNAPSHOT.jar
+```
+
+> The jar is actually created with the `bootJar` task. You can learn more about it in the [spring doc](https://docs.spring.io/spring-boot/docs/2.5.1/gradle-plugin/reference/htmlsingle/#packaging-executable.and-plain-archives)
+
+Verify our REST API is working as expected:
+
+```sh
+curl http://localhost:8080/ping
+> Pong!
+```
+
+## Create `dockerfile` manually
+
 
