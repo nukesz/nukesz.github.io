@@ -1,7 +1,7 @@
 ---
 # Documentation: https://sourcethemes.com/academic/docs/managing-content/
 
-title: "Dockerize Spring Boot"
+title: "Dockerize a Spring Boot application"
 subtitle: ""
 summary: ""
 authors: []
@@ -34,23 +34,28 @@ In this post, I'd like to present a few options to ship a spring boot applicatio
 
 ## Create new project
 
-Just hit https://start.spring.io/ and create a new project. I'll be using:
+Just go to https://start.spring.io/ and create a new project. I'll be using:
 
 - Gradle - Groovy
 - Spring Boot 3.4.2
 - Java 21
 - Dependencies: Spring Web
 
-Let's add a new `@RestController` and create an endpoint to test:
+For demonstration, I'm going to add the "/ping" endpoint and it's going to return "pong". Just simply create `PingController.java`.
+
 
 ```java
+package com.nukesz.demo;
+
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class MessageController {
+public class PingController {
+
     @GetMapping("/ping")
-    public String getMessage() {
-        return "Pong!";
+    public String ping() {
+        return "Pong";
     }
 }
 ```
@@ -73,6 +78,30 @@ curl http://localhost:8080/ping
 > Pong!
 ```
 
-## Create `dockerfile` manually
+## Create `Dockerfile` manually
 
+Our application is ready, so let's create a docker image for it. First let's
 
+```Dockerfile
+FROM eclipse-temurin:21
+LABEL org.opencontainers.image.authors="Norbert Benczur"
+RUN mkdir /opt/app
+COPY build/libs/dockerize-spring-boot-*.jar /opt/app/myapp.jar
+CMD ["java", "-jar", "/opt/app/myapp.jar"]
+```
+
+You can build and run the Docker image:
+
+```sh
+docker build -t dockerize-spring-boot .
+docker run -it -p 8080:8080 --rm dockerize-spring-boot
+```
+
+Verify that we can reach our REST API within the container as expected:
+
+```sh
+curl http://localhost:8080/ping
+> Pong!
+```
+
+Are we done? - Not at all

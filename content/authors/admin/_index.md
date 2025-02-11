@@ -10,11 +10,11 @@ authors:
 superuser: true
 
 # Role/position
-role: Senior Developer / Team Lead
+role: Senior Developer / R&D Manager
 
 # Organizations/Affiliations
 organizations:
-  - name: Vizrt Sweden AB
+  - name: Vizrt
     url: 'https://www.vizrt.com/'
 
 # Short bio (displayed in user profile at end of posts)
@@ -68,8 +68,7 @@ email: 'norbert.benczur@gmail.com'
 #  - Researchers
 #  - Visitors
 ---
-
-I'm just a simple guy who loves coding and work with languages around the JVM. I'd like to help people with videos, blog posts and coaching to be better programmers.
+I'm just a simple guy who loves coding and work with languages around the JVM. I'd like to help people at programming with videos, blog posts and coaching.
 Hope you find my work useful, don't hesitate to contact me if you have any questions about programming or topic what you would like to hear about.
 
 > Choose a job you love, and you will never have to work a day in your life.
