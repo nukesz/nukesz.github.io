@@ -104,4 +104,6 @@ curl http://localhost:8080/ping
 > Pong!
 ```
 
-Are we done? - Not at all
+Are we done? - Not at all.
+
+### What's the problem?
