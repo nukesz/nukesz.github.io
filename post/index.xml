@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts | Norbert Benczúr</title><link>https://nukesz.github.io/post/</link><atom:link href="https://nukesz.github.io/post/index.xml" rel="self" type="application/rss+xml"/><description>Posts</description><generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>2025</copyright><lastBuildDate>Mon, 10 Feb 2025 20:53:53 +0100</lastBuildDate><image><url>https://nukesz.github.io/img/icon-192.png</url><title>Posts</title><link>https://nukesz.github.io/post/</link></image><item><title>Dockerize a Spring Boot application</title><link>https://nukesz.github.io/post/dockerize-spring-boot/</link><pubDate>Mon, 10 Feb 2025 20:53:53 +0100</pubDate><guid>https://nukesz.github.io/post/dockerize-spring-boot/</guid><description>&lt;h1 id="why">Why?&lt;/h1>
+&lt;p>In this post, I&amp;rsquo;d like to present a few options to ship a spring boot application in a docker container. There are many easy ways to &lt;em>dockerize a spring boot&lt;/em> (probably a nice google hit search), but I don&amp;rsquo;t see too much discussion around the pros and cons. So let&amp;rsquo;s jump into it&lt;/p>
+&lt;h2 id="create-new-project">Create new project&lt;/h2>
+&lt;p>Just go to &lt;a href="https://start.spring.io/">https://start.spring.io/&lt;/a> and create a new project. I&amp;rsquo;ll be using:&lt;/p>
+&lt;ul>
+&lt;li>Gradle - Groovy&lt;/li>
+&lt;li>Spring Boot 3.4.2&lt;/li>
+&lt;li>Java 21&lt;/li>
+&lt;li>Dependencies: Spring Web&lt;/li>
+&lt;/ul>
+&lt;p>For demonstration, I&amp;rsquo;m going to add the &amp;ldquo;/ping&amp;rdquo; endpoint and it&amp;rsquo;s going to return &amp;ldquo;pong&amp;rdquo;. Just simply create &lt;code>PingController.java&lt;/code>.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">&lt;span style="color:#f92672">package&lt;/span> com.nukesz.demo&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">import&lt;/span> org.springframework.web.bind.annotation.GetMapping&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">import&lt;/span> org.springframework.web.bind.annotation.RestController&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#a6e22e">@RestController&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">PingController&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#a6e22e">@GetMapping&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;/ping&amp;#34;&lt;/span>&lt;span style="color:#f92672">)&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> String &lt;span style="color:#a6e22e">ping&lt;/span>&lt;span style="color:#f92672">()&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#e6db74">&amp;#34;Pong&amp;#34;&lt;/span>&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Build and run the application as a normal &lt;strong>jar&lt;/strong>:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sh" data-lang="sh">&lt;span style="color:#75715e"># Build it&lt;/span>
+./gradlew build
+&lt;span style="color:#75715e"># Run it&lt;/span>
+java -jar build/libs/dockerize-spring-boot-0.0.1-SNAPSHOT.jar
+&lt;/code>&lt;/pre>&lt;/div>&lt;blockquote>
+&lt;p>The jar is actually created with the &lt;code>bootJar&lt;/code> task. You can learn more about it in the &lt;a href="https://docs.spring.io/spring-boot/docs/2.5.1/gradle-plugin/reference/htmlsingle/#packaging-executable.and-plain-archives">spring doc&lt;/a>&lt;/p>
+&lt;/blockquote>
+&lt;p>Verify our REST API is working as expected:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sh" data-lang="sh">curl http://localhost:8080/ping
+&amp;gt; Pong!
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="create-dockerfile-manually">Create &lt;code>Dockerfile&lt;/code> manually&lt;/h2>
+&lt;p>Our application is ready, so let&amp;rsquo;s create a docker image for it. First let&amp;rsquo;s&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-Dockerfile" data-lang="Dockerfile">&lt;span style="color:#66d9ef">FROM&lt;/span>&lt;span style="color:#e6db74"> eclipse-temurin:21&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">LABEL&lt;/span> org.opencontainers.image.authors&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Norbert Benczur&amp;#34;&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">RUN&lt;/span> mkdir /opt/app&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">COPY&lt;/span> build/libs/dockerize-spring-boot-*.jar /opt/app/myapp.jar&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">CMD&lt;/span> [&lt;span style="color:#e6db74">&amp;#34;java&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;-jar&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;/opt/app/myapp.jar&amp;#34;&lt;/span>]&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>You can build and run the Docker image:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sh" data-lang="sh">docker build -t dockerize-spring-boot .
+docker run -it -p 8080:8080 --rm dockerize-spring-boot
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Verify that we can reach our REST API within the container as expected:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sh" data-lang="sh">curl http://localhost:8080/ping
+&amp;gt; Pong!
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Are we done? - Not at all.&lt;/p>
+&lt;h3 id="whats-the-problem">What&amp;rsquo;s the problem?&lt;/h3>
+&lt;p>Creating &lt;code>Dockerfile&lt;/code> manually has it pros and cons. It&amp;rsquo;s the most flexible solution where you control everything. No dependency needed.&lt;/p>
+&lt;p>The problem comes when you need more then a *&lt;code>Hello World&lt;/code> example.&lt;/p></description></item><item><title>Don't be unique</title><link>https://nukesz.github.io/post/do-not-be-unique/</link><pubDate>Mon, 26 Nov 2018 10:59:53 +0100</pubDate><guid>https://nukesz.github.io/post/do-not-be-unique/</guid><description>&lt;p>Today was a funny and interesting day. As part of my job, I&amp;rsquo;m reviewing applicant&amp;rsquo;s test and decide if he or she should proceed to the next step. Usually I see similar solutions or mistakes, but today was different. I received a test, opened in my IDE and started to scratch my head about it. It was a java code but with weird variables (String my_string, probably was spending couple of hours with python before), mixed spaces and tabs. Unnecessary comments all over place. I was taking notes as usual and moved on. The test itself has two parts. The first is kinda easy and straightforward, it aims to see the candidate&amp;rsquo;s knowledge about normal programming tasks and challenges. See how the code will be structured and organized, if there is some programming pattern used or not, etc. So I was not satisfied with first part, did not even really work, but I had an overall picture about our hero and I&amp;rsquo;ve continued to review the second part. But suddenly I was Dorothy when she enters the world of Oz. I was surprised and shocked at the same time.&lt;/p>
+&lt;p>The code was almost perfect, what is happening? I ran all the unit tests, I&amp;rsquo;ve added even a few more new, tried to come up even with weirdest use-cases, but of course, it held. I could not argue about the second part, I was just switching between the classes of the first and second part. After a few minutes I was questioning everything. Is it possible that this person somehow rushed through the first part and spent more time on the second? Did he just refactor at the end, but did not have time to clean up the beginning of the assignment? Or maybe he just became better as he coded? Seems absurd and I didn&amp;rsquo;t believe it. As I was thinking and opening the files in the project it felt there were more people working on it than just one. Could it be that this guy just asked a friend to help him with the second part and he just added those together? Yes, that&amp;rsquo;s gotta be it! But have can I prove this? Should this guy be moved to the next stage of process and try to talk about code and programming in person see if he wrote both parts?&lt;/p>
+&lt;p>Probably I could, but felt just waste of time. Still I was unsure what to do, still wondering what is happening and I had another idea. What if there is no other person, but he just &amp;ldquo;copied&amp;rdquo; from somewhere? So I was looking at the code, see if I can find any special part of it and I found a typo in it. He added a comment, but typed a word wrongly, so I thought I can search for that. The search on google did not return anything, so I went to github and started to search for the magic misspelled words and then again I became Dorothy once more. I found the exact copy of his code for the second part. And then everything made sense. He could not find the first part, so he had to do something there and implement without much help, he had to add unit tests, but again the code quality was just poor. Of course if he would have spent I little bit more time to refactor the second part, maybe he could have tricked me, but I assume you can guess by now that he did not become my colleague at the company.&lt;/p>
+&lt;p>Of course my mistake was to give an assignment that is on github, but we tend to tell people to upload the result there, I don&amp;rsquo;t really like opening zips. But it&amp;rsquo;s not the easiest to find it there either (as I tried also). I was thinking to change the test, but then I realized it was great this time also. Probably we can catch and separate people who&amp;rsquo;s just wants to copy-paste solution from others who think on the solution also.&lt;/p>
+&lt;p>After this I was thinking generally about different code styles, managing project and I realized something. We tend to have a different styles, we write code as we do, maybe I prefer short variable names, small classes and just a few comments around my code, but what if I have a colleague who really likes to type and do the opposite? Long variable names, detailed comments? Who is wrong or right? We&amp;rsquo;re not just a bunch of people who write code separately and just put it together. We&amp;rsquo;re supposed to be a team and collaborate together. There should be no code which is &amp;ldquo;mine&amp;rdquo; or &amp;ldquo;yours&amp;rdquo;. So every time you open a class or method and you can &amp;ldquo;guess&amp;rdquo; who wrote that code then probably you failed unfortunately.&lt;/p>
+&lt;p>The moral of the story is to create a style for your projects. The easiest is just to follow a normal coding convention for that language and adopt it. But of course, it won&amp;rsquo;t automatically solve all your problems, there is no silver bullet in case of a style (using static code analysis tools and code checks can help you). But try to follow as it&amp;rsquo;s in the project, see how it looks and feels. As longs as you can see your footprint in the code then you are not done and the code is ready to be part of the project. Of course this is the same for others&amp;rsquo; code. Keep mentioning to your teammates about the code style during code reviews or refactor existing code to mach the common coding style if it&amp;rsquo;s already part of the project, but does not follow the style. Adopting a common style will help you and other people to know what are &amp;ldquo;rules&amp;rdquo; around the project and guides you shipping code with high quality.&lt;/p></description></item><item><title>First Game</title><link>https://nukesz.github.io/post/first-game/</link><pubDate>Thu, 25 Oct 2018 15:46:05 +0200</pubDate><guid>https://nukesz.github.io/post/first-game/</guid><description>&lt;h1 id="create-the-first-game">Create the first game&lt;/h1>
+&lt;p>After reading and following along the &lt;a href="../design-environment">design environment post&lt;/a> you should have a fully working environment and we can start creating our first game.
+Using the gdx setup tool from libgdx it&amp;rsquo;s pretty straightforward to use. I recommend to read the official &lt;a href="https://github.com/libgdx/libgdx/wiki/Project-Setup-Gradle">documentation&lt;/a> how to run and configure the tool. However there are some trick and tips what you need to be aware of and do after the game has been created. Lets download the &lt;a href="https://libgdx.badlogicgames.com/nightlies/dist/gdx-setup.jar">jar&lt;/a> and run it.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sh" data-lang="sh">java -jar gdx-setup.jar
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>I usually keep this jar inside of some &amp;ldquo;dev&amp;rdquo; folder and I don&amp;rsquo;t need to download it each time (it&amp;rsquo;s usually good practice to have a separated folder for these tools, especially because libgdx provides many).
+Running the command use should see something like this:
+&lt;img src="https://camo.githubusercontent.com/e4c5170e04b8583b42b81375067dfc3cc70d5a5c/687474703a2f2f692e696d6775722e636f6d2f6e49356c514b542e6a7067" alt="logo">&lt;/p>
+&lt;p>On the UI fill the following things:&lt;/p>
+&lt;ul>
+&lt;li>Name: &lt;em>my-first-game&lt;/em>&lt;/li>
+&lt;li>Package: &lt;em>com.yourname.game&lt;/em>&lt;/li>
+&lt;li>Game class: &lt;em>MyFirstGame&lt;/em>&lt;/li>
+&lt;li>Destination: &lt;em>~/games/my-first-game&lt;/em>&lt;/li>
+&lt;li>Android SDK: &lt;em>~/dev/android-sdk&lt;/em>&lt;/li>
+&lt;/ul>
+&lt;p>Select Desktop and Android sub projects. Unfortunately we cannot use the html project with kotlin. For the web libgdx uses GWT which uses the java source code and not the bytecode itself. There are other projects like &lt;a href="http://www.teavm.org/">TeaVM&lt;/a> and maybe in the near future we can publish our games on the web, but right now it&amp;rsquo;s not possible out of the box. Our main target is android, so we can live and continue without the html support.&lt;/p>
+&lt;p>On the advanced options tick &lt;code>Use Kotlin&lt;/code> checkbox and click Generate. Wait until the you see the &amp;ldquo;BUILD SUCCESSFUL&amp;rdquo; message and then the generated project can be imported into IntelliJ or eclipse. File / Open, and select your new gradle project. I usually check &amp;ldquo;use auto-import&amp;rdquo; and click &amp;ldquo;OK&amp;rdquo;. If everything went well you should see your synced projects on the left and under gradle projects on the right. Running the game can be done from either from IntelliJ or the command line.&lt;/p>
+&lt;h2 id="using-ide">Using IDE&lt;/h2>
+&lt;p>Open the DesktopLauncher class -&amp;gt; Right click -&amp;gt; Run &amp;hellip; You will get an error saying &amp;ldquo;Couldn&amp;rsquo;t load file: badlogic.jpg&amp;rdquo;, to solve it go to the run configurations and change the working directory to point to the android/assets folder. Try to run it again and you should see the Bad Logic Games logo.&lt;/p>
+&lt;h2 id="using-command-line">Using command line&lt;/h2>
+&lt;p>Using kotlin and libgdx from IntelliJ can generate unknown errors. &amp;ldquo;FileNotFound&amp;rdquo;, &amp;ldquo;ClassNotFound&amp;rdquo;, etc errors. Sometimes it&amp;rsquo;s hard to know what&amp;rsquo;s the problem so I prefer to run the games from command line. Just open a terminal, navigate to the game folder and run:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sh" data-lang="sh">./gradlew desktop:run
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Of course, the same can be done from IntelliJ itself thanks to the gradle integration.&lt;/p>
+&lt;h3 id="whats-next">What&amp;rsquo;s next&lt;/h3>
+&lt;p>There a few things that you can and should do after this.&lt;/p>
+&lt;ul>
+&lt;li>Update dependencies. The setup still uses old libraries what you can upgrade (like kotlin, android plugin, ashley etc). Usually IntelliJ gives you a warning about a version mismatch or if a new version is available.&lt;/li>
+&lt;li>Convert java code to kotlin. The &amp;ldquo;Use Kotlin&amp;rdquo; still generates java code, so you should convert all those classes into kotlin.&lt;/li>
+&lt;li>IntelliJ has a nice &lt;a href="https://plugins.jetbrains.com/plugin/8509-libgdx-plugin">plugin&lt;/a> which I highly recommend to install and use. It gives you nice integration with the library.&lt;/li>
+&lt;/ul>
+&lt;h3 id="a-little-help">A little help&lt;/h3>
+&lt;p>Of course using the official setup tool is recommended, but there are other setup tools available. One popular is &lt;a href="https://github.com/czyzby/gdx-setup">gdx-setup&lt;/a> by czyzby. Have a look, probably it can help you simplify the creation of games.&lt;/p></description></item><item><title>Design Environment for Game Development</title><link>https://nukesz.github.io/post/design-environment/</link><pubDate>Thu, 04 Oct 2018 16:02:29 +0200</pubDate><guid>https://nukesz.github.io/post/design-environment/</guid><description>&lt;h1 id="getting-started">Getting started&lt;/h1>
+&lt;p>In this article I would like to show what is required to have an up and ready environment for
+game development with the &lt;strong>libgdx&lt;/strong> framework. There is a getting started page on the libgdx&amp;rsquo;s website, but I wanted to gather all the required steps in one place. I will focus on what is needed for a 2D Game Developer who is targeting &lt;strong>Android&lt;/strong> mainly. I&amp;rsquo;m using Ubuntu 18.04 right now, but probably fellow windows, macOS users can follow along.&lt;/p>
+&lt;p>We&amp;rsquo;re going to install and setup the following tools:&lt;/p>
+&lt;ul>
+&lt;li>java&lt;/li>
+&lt;li>gradle&lt;/li>
+&lt;li>android&lt;/li>
+&lt;li>IntelliJ (skip if you&amp;rsquo;re using other IDE)&lt;/li>
+&lt;/ul>
+&lt;hr>
+&lt;h2 id="java">JAVA&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sh" data-lang="sh">sudo add-apt-repository ppa:webupd8team/java -y
+sudo apt-get update
+sudo apt-get install oracle-java8-installer
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Set Oracle Java 8 as default&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sh" data-lang="sh">sudo apt-get install oracle-java8-set-default
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Verify the installation was successful&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sh" data-lang="sh">$ java -version
+java version &lt;span style="color:#e6db74">&amp;#34;1.8.0_181&amp;#34;&lt;/span>
+Java&lt;span style="color:#f92672">(&lt;/span>TM&lt;span style="color:#f92672">)&lt;/span> SE Runtime Environment &lt;span style="color:#f92672">(&lt;/span>build 1.8.0_181-b13&lt;span style="color:#f92672">)&lt;/span>
+Java HotSpot&lt;span style="color:#f92672">(&lt;/span>TM&lt;span style="color:#f92672">)&lt;/span> 64-Bit Server VM &lt;span style="color:#f92672">(&lt;/span>build 25.181-b13, mixed mode&lt;span style="color:#f92672">)&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;hr>
+&lt;h2 id="gradle">GRADLE&lt;/h2>
+&lt;p>Usually projects use &lt;a href="https://docs.gradle.org/current/userguide/gradle_wrapper.html">gradle wrapper&lt;/a> as it helps to reduce the cost to setup the build environment for the project. For example if you&amp;rsquo;re using docker (as you should! :) it helps to base you&amp;rsquo;re image on some existing java image only. You don&amp;rsquo;t have to worry about finding an image which has gradle also, just use your wrapper and you&amp;rsquo;re good to go[build].
+But&amp;hellip; of course to create the wrapper you need to have gradle installed. Probably you can get away to copy-paste from another project. But I think it&amp;rsquo;s just convenient to have it in your terminal as you need.
+I&amp;rsquo;ve copied the part from the &lt;a href="https://docs.gradle.org/current/userguide/installation.html">installation&lt;/a> page:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sh" data-lang="sh">mkdir /opt/gradle
+unzip -d /opt/gradle gradle-4.10.2-bin.zip
+ls /opt/gradle/gradle-4.10.2
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Verify installation&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sh" data-lang="sh">gradle -v
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Add it to the path. I recommend you to add this line to end of your ~/.bashrc so it will be loaded each time you open a new terminal.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sh" data-lang="sh">export PATH&lt;span style="color:#f92672">=&lt;/span>$PATH:/opt/gradle/gradle-4.10.2/bin
+&lt;/code>&lt;/pre>&lt;/div>&lt;hr>
+&lt;h2 id="android">ANDROID&lt;/h2>
+&lt;p>The market we aim is going to be the Android Marketplace, Google Play. In order to build, run and
+test games, we need to have Android SDK on our machine, so let&amp;rsquo;s download it.
+I prefer to use the command line tools only, so just go to &lt;a href="https://developer.android.com/studio/">android developer&lt;/a> page, scroll to the &amp;ldquo;Command line tools&amp;rdquo; only section and
+download the linux zip.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sh" data-lang="sh">mkdir ~/dev/android-sdk
+unzip sdk-tools-linux-*.zip
+mv tools/ ~/dev/android-sdk/tools
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>We can repeat the same steps as we did for gradle to create the environment variables and add the binaries to the path.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sh" data-lang="sh">export ANDROID_HOME&lt;span style="color:#f92672">=&lt;/span>~/dev/android-sdk
+export ANDROID_TOOLS&lt;span style="color:#f92672">=&lt;/span>$ANDROID_HOME/tools
+export PATH&lt;span style="color:#f92672">=&lt;/span>$PATH:$ANDROID_TOOLS/bin
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Verify the installation by running the &lt;code>sdkmanager&lt;/code>.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sh" data-lang="sh">$ sdkmanager
+Warning: File /home/nukesz/.android/repositories.cfg could not be loaded.
+&lt;span style="color:#f92672">[=======================================]&lt;/span> 100% Computing updates...
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>You can easily fix the warning by create an empty cfg file.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sh" data-lang="sh">touch ~/.android/repositories.cfg
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>We have more thing to do and that is to install build-tools and platforms for android. I tend to pick a stable version and make sure all the games I develop are using that version. In my opinion it&amp;rsquo;s easier to maintain one version (and emulators to it) than getting weird errors because of different versions. So let&amp;rsquo;s install Android 28.&lt;/p>
+&lt;h2 id="install-build-tools">Install Build Tools&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sh" data-lang="sh">yes | sdkmanager &lt;span style="color:#e6db74">&amp;#34;build-tools;28.0.1&amp;#34;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="install-platforms">Install platforms&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sh" data-lang="sh">yes | sdkmanager &lt;span style="color:#e6db74">&amp;#34;platforms;android-28&amp;#34;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>After these two commands, you should have a following structure in your &lt;em>ANDROID_HOME&lt;/em>:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sh" data-lang="sh">$ ls $ANDROID_HOME
+build-tools licenses platforms sdk-tools
+&lt;/code>&lt;/pre>&lt;/div>&lt;hr>
+&lt;h2 id="intellij">INTELLIJ&lt;/h2>
+&lt;p>I don&amp;rsquo;t want to waste my pen to write down what you can find on the awesome &lt;a href="https://www.jetbrains.com/">jetbrains&lt;/a> page, but I just want to highlight that instead of downloading all the cool products from jetbrains one-by-one, just download the &lt;a href="https://www.jetbrains.com/toolbox/app/">toolbox&lt;/a>. With that app you can download/upgrade/delete apps, and never have to worry about upgrading manually, linking bins etc.&lt;/p>
+&lt;hr>
+&lt;h2 id="summary">SUMMARY&lt;/h2>
+&lt;p>With all these, you now have a fully functional environment and ready to jump into the game development business! In the next post we&amp;rsquo;re going to create our first game using libgdx.&lt;/p></description></item></channel></rss>

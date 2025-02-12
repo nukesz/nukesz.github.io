@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>gradle | Norbert Benczúr</title><link>https://nukesz.github.io/tags/gradle/</link><atom:link href="https://nukesz.github.io/tags/gradle/index.xml" rel="self" type="application/rss+xml"/><description>gradle</description><generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>2025</copyright><lastBuildDate>Thu, 25 Oct 2018 15:46:05 +0200</lastBuildDate><image><url>https://nukesz.github.io/img/icon-192.png</url><title>gradle</title><link>https://nukesz.github.io/tags/gradle/</link></image><item><title>First Game</title><link>https://nukesz.github.io/post/first-game/</link><pubDate>Thu, 25 Oct 2018 15:46:05 +0200</pubDate><guid>https://nukesz.github.io/post/first-game/</guid><description>&lt;h1 id="create-the-first-game">Create the first game&lt;/h1>
+&lt;p>After reading and following along the &lt;a href="../design-environment">design environment post&lt;/a> you should have a fully working environment and we can start creating our first game.
+Using the gdx setup tool from libgdx it&amp;rsquo;s pretty straightforward to use. I recommend to read the official &lt;a href="https://github.com/libgdx/libgdx/wiki/Project-Setup-Gradle">documentation&lt;/a> how to run and configure the tool. However there are some trick and tips what you need to be aware of and do after the game has been created. Lets download the &lt;a href="https://libgdx.badlogicgames.com/nightlies/dist/gdx-setup.jar">jar&lt;/a> and run it.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sh" data-lang="sh">java -jar gdx-setup.jar
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>I usually keep this jar inside of some &amp;ldquo;dev&amp;rdquo; folder and I don&amp;rsquo;t need to download it each time (it&amp;rsquo;s usually good practice to have a separated folder for these tools, especially because libgdx provides many).
+Running the command use should see something like this:
+&lt;img src="https://camo.githubusercontent.com/e4c5170e04b8583b42b81375067dfc3cc70d5a5c/687474703a2f2f692e696d6775722e636f6d2f6e49356c514b542e6a7067" alt="logo">&lt;/p>
+&lt;p>On the UI fill the following things:&lt;/p>
+&lt;ul>
+&lt;li>Name: &lt;em>my-first-game&lt;/em>&lt;/li>
+&lt;li>Package: &lt;em>com.yourname.game&lt;/em>&lt;/li>
+&lt;li>Game class: &lt;em>MyFirstGame&lt;/em>&lt;/li>
+&lt;li>Destination: &lt;em>~/games/my-first-game&lt;/em>&lt;/li>
+&lt;li>Android SDK: &lt;em>~/dev/android-sdk&lt;/em>&lt;/li>
+&lt;/ul>
+&lt;p>Select Desktop and Android sub projects. Unfortunately we cannot use the html project with kotlin. For the web libgdx uses GWT which uses the java source code and not the bytecode itself. There are other projects like &lt;a href="http://www.teavm.org/">TeaVM&lt;/a> and maybe in the near future we can publish our games on the web, but right now it&amp;rsquo;s not possible out of the box. Our main target is android, so we can live and continue without the html support.&lt;/p>
+&lt;p>On the advanced options tick &lt;code>Use Kotlin&lt;/code> checkbox and click Generate. Wait until the you see the &amp;ldquo;BUILD SUCCESSFUL&amp;rdquo; message and then the generated project can be imported into IntelliJ or eclipse. File / Open, and select your new gradle project. I usually check &amp;ldquo;use auto-import&amp;rdquo; and click &amp;ldquo;OK&amp;rdquo;. If everything went well you should see your synced projects on the left and under gradle projects on the right. Running the game can be done from either from IntelliJ or the command line.&lt;/p>
+&lt;h2 id="using-ide">Using IDE&lt;/h2>
+&lt;p>Open the DesktopLauncher class -&amp;gt; Right click -&amp;gt; Run &amp;hellip; You will get an error saying &amp;ldquo;Couldn&amp;rsquo;t load file: badlogic.jpg&amp;rdquo;, to solve it go to the run configurations and change the working directory to point to the android/assets folder. Try to run it again and you should see the Bad Logic Games logo.&lt;/p>
+&lt;h2 id="using-command-line">Using command line&lt;/h2>
+&lt;p>Using kotlin and libgdx from IntelliJ can generate unknown errors. &amp;ldquo;FileNotFound&amp;rdquo;, &amp;ldquo;ClassNotFound&amp;rdquo;, etc errors. Sometimes it&amp;rsquo;s hard to know what&amp;rsquo;s the problem so I prefer to run the games from command line. Just open a terminal, navigate to the game folder and run:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sh" data-lang="sh">./gradlew desktop:run
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Of course, the same can be done from IntelliJ itself thanks to the gradle integration.&lt;/p>
+&lt;h3 id="whats-next">What&amp;rsquo;s next&lt;/h3>
+&lt;p>There a few things that you can and should do after this.&lt;/p>
+&lt;ul>
+&lt;li>Update dependencies. The setup still uses old libraries what you can upgrade (like kotlin, android plugin, ashley etc). Usually IntelliJ gives you a warning about a version mismatch or if a new version is available.&lt;/li>
+&lt;li>Convert java code to kotlin. The &amp;ldquo;Use Kotlin&amp;rdquo; still generates java code, so you should convert all those classes into kotlin.&lt;/li>
+&lt;li>IntelliJ has a nice &lt;a href="https://plugins.jetbrains.com/plugin/8509-libgdx-plugin">plugin&lt;/a> which I highly recommend to install and use. It gives you nice integration with the library.&lt;/li>
+&lt;/ul>
+&lt;h3 id="a-little-help">A little help&lt;/h3>
+&lt;p>Of course using the official setup tool is recommended, but there are other setup tools available. One popular is &lt;a href="https://github.com/czyzby/gdx-setup">gdx-setup&lt;/a> by czyzby. Have a look, probably it can help you simplify the creation of games.&lt;/p></description></item></channel></rss>
