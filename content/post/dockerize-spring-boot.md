@@ -107,3 +107,7 @@ curl http://localhost:8080/ping
 Are we done? - Not at all.
 
 ### What's the problem?
+
+Creating `Dockerfile` manually has it pros and cons. It's the most flexible solution where you control everything. No dependency needed.
+
+The problem comes when you need more then a *`Hello World` example.
