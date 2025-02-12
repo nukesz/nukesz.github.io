@@ -1,8 +1,9 @@
 # Blog
 
-The blog is generated with [Hugo](https://gohugo.io/) using the Academic theme. All the posts under [content/post](content/post) are published on https://nukesz.github.io/ .
+The blog is generated with [Hugo](https://gohugo.io/) using the Academic theme. All the posts under [content/post](content/post) are published to https://nukesz.github.io/ automatically.
 
-Usage:
+To preview it locally:
+
 ```sh
 hugo server
 ```
