@@ -28,7 +28,7 @@ image:
 projects: []
 ---
 
-# Why?
+## Introduction
 
 In this post, I'd like to present a few options to ship a spring boot application in a docker container. There are many easy ways to *dockerize a spring boot* (probably a nice google hit search), but I don't see too much discussion around the pros and cons. So let's jump into it
 
@@ -82,7 +82,7 @@ curl http://localhost:8080/ping
 
 Our application is ready, so let's create a docker image for it. First let's
 
-```Dockerfile
+```sh
 FROM eclipse-temurin:21
 LABEL org.opencontainers.image.authors="Norbert Benczur"
 RUN mkdir /opt/app
@@ -94,13 +94,13 @@ You can build and run the Docker image:
 
 ```sh
 docker build -t dockerize-spring-boot .
-docker run -it -p 8080:8080 --rm dockerize-spring-boot
+docker run -it -p 8080:8080 --rm $ dockerize-spring-boot
 ```
 
 Verify that we can reach our REST API within the container as expected:
 
 ```sh
-curl http://localhost:8080/ping
+$ curl http://localhost:8080/ping
 > Pong!
 ```
 
@@ -108,6 +108,32 @@ Are we done? - Not at all.
 
 ### What's the problem?
 
-Creating `Dockerfile` manually has it pros and cons. It's the most flexible solution where you control everything. No dependency needed.
+Creating `Dockerfile` manually has its pros and cons. It's the most flexible solution where you control everything. No dependency needed.
 
-The problem comes when you need more then a *`Hello World` example.
+The problem comes when you need more than a `Hello World` example.
+
+#### Repetitive
+
+When you have more than 1 java app to dockerize, the number of dockerfiles starts to grow and you have to maintain and update each file independently.
+
+#### Efficiency
+
+In this simple example, we defined our base image and started our *fat jar*. But is that the most optimal way to build and run a spring boot (or any other java) application?
+For example let's change a single file in our application and build the image again:
+
+```sh
+# Let's measure the re-build
+$ time  ( ./gradlew build -x test; docker build -t dockerize-spring-boot .)
+> ..
+> => [3/3] COPY build/libs/dockerize-spring-boot-*.jar /opt/app/myapp.jar
+> ..
+> real 0m7,640s
+```
+
+So even a single change could cause the jar to be re-built and copied again. We are obviously not using the benefits of docker layers.
+
+Can't we leverage other people's work rather than trying to come up with most optimal `Dockerfile` ourself?
+
+## Use Buildpack
+
+TBD
