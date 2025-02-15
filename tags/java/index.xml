@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>java | Norbert Benczúr</title><link>https://nukesz.github.io/tags/java/</link><atom:link href="https://nukesz.github.io/tags/java/index.xml" rel="self" type="application/rss+xml"/><description>java</description><generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>2025</copyright><lastBuildDate>Mon, 10 Feb 2025 20:53:53 +0100</lastBuildDate><image><url>https://nukesz.github.io/img/icon-192.png</url><title>java</title><link>https://nukesz.github.io/tags/java/</link></image><item><title>Dockerize a Spring Boot application</title><link>https://nukesz.github.io/post/dockerize-spring-boot/</link><pubDate>Mon, 10 Feb 2025 20:53:53 +0100</pubDate><guid>https://nukesz.github.io/post/dockerize-spring-boot/</guid><description>&lt;h2 id="introduction">Introduction&lt;/h2>
-&lt;p>In this post, I&amp;rsquo;d like to present a few options to ship a spring boot application in a docker container. There are many easy ways to &lt;em>dockerize a spring boot&lt;/em> (probably a nice google hit search), but I don&amp;rsquo;t see too much discussion around the pros and cons. So let&amp;rsquo;s jump into it&lt;/p>
+&lt;p>In this post, I&amp;rsquo;d like to present a few options to ship a spring boot application in a docker container. There are many ways to &lt;em>dockerize a spring boot&lt;/em> (probably a nice google hit search), but I don&amp;rsquo;t see too much discussion around the pros and cons. So let&amp;rsquo;s jump into it.&lt;/p>
 &lt;h2 id="create-new-project">Create new project&lt;/h2>
-&lt;p>Just go to &lt;a href="https://start.spring.io/">https://start.spring.io/&lt;/a> and create a new project. I&amp;rsquo;ll be using:&lt;/p>
+&lt;p>Go to &lt;a href="https://start.spring.io/">https://start.spring.io/&lt;/a> and create a new project. I&amp;rsquo;ll be using:&lt;/p>
 &lt;ul>
 &lt;li>Gradle - Groovy&lt;/li>
 &lt;li>Spring Boot 3.4.2&lt;/li>
 &lt;li>Java 21&lt;/li>
 &lt;li>Dependencies: Spring Web&lt;/li>
 &lt;/ul>
-&lt;p>For demonstration, I&amp;rsquo;m going to add the &amp;ldquo;/ping&amp;rdquo; endpoint and it&amp;rsquo;s going to return &amp;ldquo;pong&amp;rdquo;. Just simply create &lt;code>PingController.java&lt;/code>.&lt;/p>
+&lt;p>For demonstration, I&amp;rsquo;m going to add a &amp;ldquo;/ping&amp;rdquo; endpoint and it&amp;rsquo;s going to return &amp;ldquo;pong&amp;rdquo;. Just simply create &lt;code>PingController.java&lt;/code>.&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">&lt;span style="color:#f92672">package&lt;/span> com.nukesz.demo&lt;span style="color:#f92672">;&lt;/span>
 &lt;span style="color:#f92672">import&lt;/span> org.springframework.web.bind.annotation.GetMapping&lt;span style="color:#f92672">;&lt;/span>
 &lt;span style="color:#f92672">import&lt;/span> org.springframework.web.bind.annotation.RestController&lt;span style="color:#f92672">;&lt;/span>
@@ -28,7 +28,7 @@ java -jar build/libs/dockerize-spring-boot-0.0.1-SNAPSHOT.jar
 &lt;p>The jar is actually created with the &lt;code>bootJar&lt;/code> task. You can learn more about it in the &lt;a href="https://docs.spring.io/spring-boot/docs/2.5.1/gradle-plugin/reference/htmlsingle/#packaging-executable.and-plain-archives">spring doc&lt;/a>&lt;/p>
 &lt;/blockquote>
 &lt;p>Verify our REST API is working as expected:&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sh" data-lang="sh">curl http://localhost:8080/ping
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sh" data-lang="sh">$ curl http://localhost:8080/ping
 &amp;gt; Pong!
 &lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="create-dockerfile-manually">Create &lt;code>Dockerfile&lt;/code> manually&lt;/h2>
 &lt;p>Our application is ready, so let&amp;rsquo;s create a docker image for it. First let&amp;rsquo;s&lt;/p>
@@ -39,21 +39,21 @@ COPY build/libs/dockerize-spring-boot-*.jar /opt/app/myapp.jar
 CMD &lt;span style="color:#f92672">[&lt;/span>&lt;span style="color:#e6db74">&amp;#34;java&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;-jar&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;/opt/app/myapp.jar&amp;#34;&lt;/span>&lt;span style="color:#f92672">]&lt;/span>
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>You can build and run the Docker image:&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sh" data-lang="sh">docker build -t dockerize-spring-boot .
-docker run -it -p 8080:8080 --rm $ dockerize-spring-boot
+docker run -it -p 8080:8080 --rm dockerize-spring-boot
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Verify that we can reach our REST API within the container as expected:&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sh" data-lang="sh">$ curl http://localhost:8080/ping
 &amp;gt; Pong!
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Are we done? - Not at all.&lt;/p>
 &lt;h3 id="whats-the-problem">What&amp;rsquo;s the problem?&lt;/h3>
 &lt;p>Creating &lt;code>Dockerfile&lt;/code> manually has its pros and cons. It&amp;rsquo;s the most flexible solution where you control everything. No dependency needed.&lt;/p>
-&lt;p>The problem comes when you need more than a &lt;code>Hello World&lt;/code> example.&lt;/p>
+&lt;p>But I think the biggest drawback with this approach is that &lt;strong>it seems&lt;/strong> everything is working, but in fact it is hiding the underlining work that is missing. The problem comes when you need more than a &lt;code>Hello World&lt;/code> example.&lt;/p>
 &lt;h4 id="repetitive">Repetitive&lt;/h4>
 &lt;p>When you have more than 1 java app to dockerize, the number of dockerfiles starts to grow and you have to maintain and update each file independently.&lt;/p>
 &lt;h4 id="efficiency">Efficiency&lt;/h4>
 &lt;p>In this simple example, we defined our base image and started our &lt;em>fat jar&lt;/em>. But is that the most optimal way to build and run a spring boot (or any other java) application?
-For example let&amp;rsquo;s change a single file in our application and build the image again:&lt;/p>
+For example, let&amp;rsquo;s change a single file in our application and build the image again:&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sh" data-lang="sh">&lt;span style="color:#75715e"># Let&amp;#39;s measure the re-build&lt;/span>
-$ time &lt;span style="color:#f92672">(&lt;/span> ./gradlew build -x test; docker build -t dockerize-spring-boot .&lt;span style="color:#f92672">)&lt;/span>
+$ time &lt;span style="color:#f92672">(&lt;/span> ./gradlew build -x test; docker build -t dockerize-spring-boot . &lt;span style="color:#f92672">)&lt;/span>
 &amp;gt; ..
 &amp;gt; &lt;span style="color:#f92672">=&lt;/span>&amp;gt; &lt;span style="color:#f92672">[&lt;/span>3/3&lt;span style="color:#f92672">]&lt;/span> COPY build/libs/dockerize-spring-boot-*.jar /opt/app/myapp.jar
 &amp;gt; ..
