@@ -30,19 +30,18 @@ projects: []
 
 ## Introduction
 
-In this post, I'd like to present a few options to ship a spring boot application in a docker container. There are many easy ways to *dockerize a spring boot* (probably a nice google hit search), but I don't see too much discussion around the pros and cons. So let's jump into it
+In this post, I'd like to present a few options to ship a spring boot application in a docker container. There are many ways to *dockerize a spring boot* (probably a nice google hit search), but I don't see too much discussion around the pros and cons. So let's jump into it.
 
 ## Create new project
 
-Just go to https://start.spring.io/ and create a new project. I'll be using:
+Go to https://start.spring.io/ and create a new project. I'll be using:
 
 - Gradle - Groovy
 - Spring Boot 3.4.2
 - Java 21
 - Dependencies: Spring Web
 
-For demonstration, I'm going to add the "/ping" endpoint and it's going to return "pong". Just simply create `PingController.java`.
-
+For demonstration, I'm going to add a "/ping" endpoint and it's going to return "pong". Just simply create `PingController.java`.
 
 ```java
 package com.nukesz.demo;
@@ -74,7 +73,7 @@ java -jar build/libs/dockerize-spring-boot-0.0.1-SNAPSHOT.jar
 Verify our REST API is working as expected:
 
 ```sh
-curl http://localhost:8080/ping
+$ curl http://localhost:8080/ping
 > Pong!
 ```
 
@@ -94,7 +93,7 @@ You can build and run the Docker image:
 
 ```sh
 docker build -t dockerize-spring-boot .
-docker run -it -p 8080:8080 --rm $ dockerize-spring-boot
+docker run -it -p 8080:8080 --rm dockerize-spring-boot
 ```
 
 Verify that we can reach our REST API within the container as expected:
@@ -110,7 +109,7 @@ Are we done? - Not at all.
 
 Creating `Dockerfile` manually has its pros and cons. It's the most flexible solution where you control everything. No dependency needed.
 
-The problem comes when you need more than a `Hello World` example.
+But I think the biggest drawback with this approach is that **it seems** everything is working, but in fact it is hiding the underlining work that is missing. The problem comes when you need more than a `Hello World` example.
 
 #### Repetitive
 
@@ -119,11 +118,11 @@ When you have more than 1 java app to dockerize, the number of dockerfiles start
 #### Efficiency
 
 In this simple example, we defined our base image and started our *fat jar*. But is that the most optimal way to build and run a spring boot (or any other java) application?
-For example let's change a single file in our application and build the image again:
+For example, let's change a single file in our application and build the image again:
 
 ```sh
 # Let's measure the re-build
-$ time  ( ./gradlew build -x test; docker build -t dockerize-spring-boot .)
+$ time  ( ./gradlew build -x test; docker build -t dockerize-spring-boot . )
 > ..
 > => [3/3] COPY build/libs/dockerize-spring-boot-*.jar /opt/app/myapp.jar
 > ..
