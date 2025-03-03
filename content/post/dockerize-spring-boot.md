@@ -220,7 +220,7 @@ $ curl http://localhost:8080/ping
 This already gives us a solid ground to build upon for production and uses all the best practices almost for free. For example we already could see two benefits:
 
 - The size of the created docker image from the "manual" `Dockerfile` is **468MB** while the image created by paketo with default settings is **265MB**.
-- The docker layers are cached. When only the java source code is changed, we can see the following message: *Reused 4/5 app layer(s)*. So we (Paketo) can optimize our build and rebuild only what's actually necesseary.
+- The docker layers are cached. When only the java source code is changed, we can see the following message: *Reused 4/5 app layer(s)*. So we (Paketo) can optimize our build and rebuild only what's actually necessary.
 
 For more information please have a look on the Spring doc [Packaging OCI Images](https://docs.spring.io/spring-boot/gradle-plugin/packaging-oci-image.html).
 
