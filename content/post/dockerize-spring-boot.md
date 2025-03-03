@@ -133,6 +133,97 @@ So even a single change could cause the jar to be re-built and copied again. We 
 
 Can't we leverage other people's work rather than trying to come up with most optimal `Dockerfile` ourself?
 
-## Use Buildpack
+## Use Buildpacks
 
-TBD
+Many of the problems that I mentioned previously comes from that the fact that we wrote our `Dockerfile` manually. So let's look another approach which does not need any Dockerfile at all.
+
+[Buildpacks](https://buildpacks.io/) transform the source code into containers without Dockerfiles. There are multiple projects that implements the Cloud Native Buildpacks (CNBs) [spec](https://github.com/buildpacks/spec) and probably best two options for java application today is:
+[Paketo](https://paketo.io/) and [Jib](https://github.com/GoogleContainerTools/jib).
+
+### Paketo
+
+We can use paketo by executing the following gradle (or maven) task:
+
+```gradle
+./gradlew bootBuildImage
+```
+
+The task will look at your files, configurations and create a docker image based on the result of the analyses. It's output is really user friendly and show all the parameters that it used for building the image.
+
+```bash
+> Task :bootBuildImage
+Building image 'docker.io/library/dockerize-spring-boot:0.0.1-SNAPSHOT'
+
+ > Pulling builder image 'docker.io/paketobuildpacks/builder-jammy-java-tiny:latest'
+ > Pulled builder image 'paketobuildpacks/builder-jammy-java-tiny@sha256:c5c53'
+ > Pulling run image 'docker.io/paketobuildpacks/run-jammy-tiny:latest' for platform 'linux/amd64'
+ > Pulled run image 'paketobuildpacks/run-jammy-tiny@sha256:0c5ac'
+ > Executing lifecycle version v0.20.6
+ > Using build cache volume 'pack-cache-7b0feb92a365.build'
+
+ > Running creator
+    [creator]     ===> ANALYZING
+    [creator]     Image with name "docker.io/library/dockerize-spring-boot:0.0.1-SNAPSHOT" not found
+    [creator]     ===> DETECTING
+    [creator]       ...
+    [creator]     ===> RESTORING
+    [creator]     ===> BUILDING
+    [creator]       ...
+    [creator]     Paketo Buildpack for Spring Boot 5.32.1
+    [creator]       https://github.com/paketo-buildpacks/spring-boot
+    [creator]       Build Configuration:
+    [creator]         $BPL_JVM_CDS_ENABLED                 false  whether to enable CDS optimizations at runtime
+    [creator]         $BPL_SPRING_AOT_ENABLED              false  whether to enable Spring AOT at runtime
+    [creator]         $BP_JVM_CDS_ENABLED                  false  whether to enable CDS & perform JVM training run
+    [creator]         $BP_SPRING_AOT_ENABLED               false  whether to enable Spring AOT
+    [creator]         $BP_SPRING_CLOUD_BINDINGS_DISABLED   false  whether to contribute Spring Boot cloud bindings support
+    [creator]         $BP_SPRING_CLOUD_BINDINGS_VERSION    1      default version of Spring Cloud Bindings library to contribute
+    [creator]       Launch Configuration:
+    [creator]         $BPL_SPRING_CLOUD_BINDINGS_DISABLED  false  whether to auto-configure Spring Boot environment properties from bindings
+    [creator]         $BPL_SPRING_CLOUD_BINDINGS_ENABLED   true   Deprecated - whether to auto-configure Spring Boot environment properties from bindings
+    [creator]       Creating slices from layers index
+    [creator]         dependencies (19.5 MB)
+    [creator]         spring-boot-loader (458.8 KB)
+    [creator]         snapshot-dependencies (0.0 B)
+    [creator]         application (35.9 KB)
+    [creator]       Spring Cloud Bindings 2.0.4: Contributing to layer
+    [creator]         Downloading from https://repo1.maven.org/maven2/org/springframework/cloud/spring-cloud-bindings/2.0.4/spring-cloud-bindings-2.0.4.jar
+    [creator]         Verifying checksum
+    [creator]         Copying to /layers/paketo-buildpacks_spring-boot/spring-cloud-bindings
+    [creator]       Web Application Type: Contributing to layer
+    [creator]         Servlet web application detected
+    [creator]         Writing env.launch/BPL_JVM_THREAD_COUNT.default
+    [creator]       Launch Helper: Contributing to layer
+    [creator]         Creating /layers/paketo-buildpacks_spring-boot/helper/exec.d/spring-cloud-bindings
+    [creator]       4 application slices
+    [creator]       Image labels:
+    [creator]         org.opencontainers.image.title
+    [creator]         org.opencontainers.image.version
+    [creator]         org.springframework.boot.version
+    [creator]     ===> EXPORTING
+    [creator]     Adding layer 'paketo-buildpacks/...
+    [creator]         ...
+
+Successfully built image 'docker.io/library/dockerize-spring-boot:0.0.1-SNAPSHOT'
+
+BUILD SUCCESSFUL in 1m 57s
+```
+
+Let's run and test our the newly created images as before:
+
+```sh
+$ docker run -it -p 8080:8080 --rm dockerize-spring-boot:0.0.1-SNAPSHOT
+$ curl http://localhost:8080/ping
+> Pong!
+```
+
+This already gives us a solid ground to build upon for production and uses all the best practices almost for free. For example we already could see two benefits:
+
+- The size of the created docker image from the "manual" `Dockerfile` is **468MB** while the image created by paketo with default settings is **265MB**.
+- The docker layers are cached. When only the java source code is changed, we can see the following message: *Reused 4/5 app layer(s)*. So we (Paketo) can optimize our build and rebuild only what's actually necesseary.
+
+For more information please have a look on the Spring doc [Packaging OCI Images](https://docs.spring.io/spring-boot/gradle-plugin/packaging-oci-image.html).
+
+### Jib
+
+*Coming soon...*
