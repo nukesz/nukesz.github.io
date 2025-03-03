@@ -148,7 +148,7 @@ We can use paketo by executing the following gradle (or maven) task:
 ./gradlew bootBuildImage
 ```
 
-The task will look at your files, configurations and create a docker image based on the result of the analyses. It's output is really user friendly and show all the parameters that it used for building the image.
+The task will look and analyze your files, configurations and create a docker image based on it. The task's output is really user friendly and show all the parameters that it used for building the image.
 
 ```bash
 > Task :bootBuildImage
