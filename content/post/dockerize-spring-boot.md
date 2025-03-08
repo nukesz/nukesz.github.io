@@ -144,7 +144,7 @@ Many of the problems that I mentioned previously comes from that the fact that w
 
 We can use paketo by executing the following gradle (or maven) task:
 
-```gradle
+```sh
 ./gradlew bootBuildImage
 ```
 
@@ -212,8 +212,8 @@ BUILD SUCCESSFUL in 1m 57s
 Let's run and test our the newly created images as before:
 
 ```sh
-$ docker run -it -p 8080:8080 --rm dockerize-spring-boot:0.0.1-SNAPSHOT
-$ curl http://localhost:8080/ping
+$ docker run -it -p 8081:8080 --rm dockerize-spring-boot:0.0.1-SNAPSHOT
+$ curl http://localhost:8081/ping
 > Pong!
 ```
 
@@ -226,4 +226,38 @@ For more information please have a look on the Spring doc [Packaging OCI Images]
 
 ### Jib
 
-*Coming soon...*
+Another option that I would like to present is called [Jib](https://github.com/GoogleContainerTools/jib). This is part of Google's container tools to dockerize Java applications, similar what we have seen in the previous chapter.
+
+Let's use it via the [gradle plugin](https://github.com/GoogleContainerTools/jib/tree/master/jib-gradle-plugin). You can add the plugin to the `build.gradle` file:
+
+```gradle
+plugins {
+  id 'com.google.cloud.tools.jib' version '3.4.4'
+}
+```
+
+And then create a docker image:
+
+```sh
+./gradlew jibDockerBuild --image=dockerize-spring-boot-jib
+```
+
+Let's run and test one last time:
+
+```sh
+$ docker run -it -p 8082:8080 --rm dockerize-spring-boot-jib:latest
+$ curl http://localhost:8082/ping
+> Pong!
+```
+
+It's a very rich plugin, so I recommend to spend time how to configure it (for example how to change the base image).
+
+### What's the catch?
+
+The major drawback with these options is that it introduces a dependency to you project (or even a plugin). You have to learn, understand, configure and maintain it. Contributors to (open source) projects can come and go, and there is no guarantee that these project will stay and get updates forever.
+
+This problem is not unique to these plugins, but general for all dependencies, libraries and frameworks that your projects relies on, so make sure that you evaluate before adding it to your project.
+
+## Summary
+
+I hope following this post you gained the knowledge how to dockerize a spring boot application and made it clear that there are always tradeoffs to consider when deciding how to create a docker image based on your application.
